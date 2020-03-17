@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.zhc</groupId>
+    <artifactId>mooc_foodie_dev</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>mooc_foodie_common</module>
+        <module>mooc_foodie_pojo</module>
+        <module>mooc_foodie_mapper</module>
+        <module>mooc_foodie_service</module>
+        <module>mooc_foodie_api</module>
+    </modules>
+
+    <packaging>pom</packaging>
+
+
+</project>

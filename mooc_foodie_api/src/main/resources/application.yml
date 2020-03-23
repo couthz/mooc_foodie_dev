@@ -6,17 +6,25 @@ spring:
     username: root
     password: 123456
     hikari:
-      connection-timeout: 30000     #等待连接池分配连接的最大时长（毫秒）
-      minimum-idle: 5               #最小连接数
-      maximum-pool-size: 20         #最大连接数
-      auto-commit: true             #自动提交
-      idle-timeout: 600000          #连接超时的最大时长（毫秒),超时则被释放，默认10分钟
-      pool-name: DateSourceHikariCP     #连接池名字
-      max-lifetime: 1800000           #连接的生命时长，超时而且没被使用则被释放，默认30分钟
+      connection-timeout: 30000
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 600000
+      pool-name: DateSourceHikariCP
+      max-lifetime: 1800000
       connection-test-query: SELECT 1
+
 mybatis:
   type-aliases-package: com.zhc.pojo
-  mapper-locations: classpath:mapper/*.xml        #mapper xml文件的包名就不需要和java接口的包名相同了
+  mapper-locations: classpath:mapper/*.xml
+
+server:
+  port: 8088
+  tomcat:
+    uri-encoding: UTF-8
+  max-http-header-size: 80KB
+
 mapper:
   mappers: com.zhc.my.mapper.MyMapper
   not-empty: false

@@ -4,14 +4,20 @@ import com.zhc.pojo.Users;
 import com.zhc.pojo.bo.UserBo;
 import com.zhc.service.StuService;
 import com.zhc.service.UserService;
+import com.zhc.utils.CookieUtils;
 import com.zhc.utils.IMOOCJSONResult;
+import com.zhc.utils.JsonUtils;
 import com.zhc.utils.MD5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Api(value ="用户api",tags = {"用户认证接口"})
 @RestController
@@ -45,7 +51,9 @@ public class PassportController {
     //在这个项目里校验基本都是在api层做的，因此api层代码的逻辑都应该是校验+调用service
     @ApiOperation(value = "用户注册", notes = "用于用户注册")
     @PostMapping("/regist")
-    public IMOOCJSONResult regist(@RequestBody UserBo userBo){
+    public IMOOCJSONResult regist(@RequestBody UserBo userBo,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response){
 
         String username = userBo.getUsername();
         String password = userBo.getPassword();
@@ -74,14 +82,19 @@ public class PassportController {
         }
 
         //4.实现注册
-        userService.createUser(userBo);
+        Users userResult = userService.createUser(userBo);
+        userResult = setNullProperty(userResult);
+        //将用户信息用utf-8编码，添加到cookie
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult),true);
         return IMOOCJSONResult.ok();
 
     }
 
     @ApiOperation(value = "用户登录", notes = "用于用户登录")
     @PostMapping("/login")
-    public IMOOCJSONResult login(@RequestBody UserBo userBo) throws Exception {
+    public IMOOCJSONResult login(@RequestBody UserBo userBo,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) throws Exception {
 
         String username = userBo.getUsername();
         String password = userBo.getPassword();
@@ -95,7 +108,41 @@ public class PassportController {
         if(userResult ==  null){
             return IMOOCJSONResult.errorMsg("用户名或密码不正确");
         }
-        return IMOOCJSONResult.ok(userResult);
+
+        //2.清空敏感信息，返回
+        userResult = setNullProperty(userResult);
+        //将用户信息用utf-8编码，添加到cookie
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult),true);
+        return IMOOCJSONResult.ok();
     }
+
+    @ApiOperation(value = "用户退出", notes = "用于用户退出")
+    @PostMapping("/logout")
+    public IMOOCJSONResult logout(@RequestParam String userId,HttpServletRequest request,
+                                  HttpServletResponse response) {
+
+        //清除用户相关信息的cookie,主页就不会显示用户信息了
+        //本项目中没有做权限控制，访问主页不会跳回登录页
+        CookieUtils.deleteCookie(request,response,"user");
+
+        //TODO 用户退出登录，需要清空购物车
+        //TODO 分布式会话中需要清除用户数据
+        return IMOOCJSONResult.ok();
+
+    }
+
+
+
+    private Users setNullProperty(Users userResult) {
+        userResult.setPassword(null);
+        userResult.setMobile(null);
+        userResult.setEmail(null);
+        userResult.setCreatedTime(null);
+        userResult.setUpdatedTime(null);
+        userResult.setBirthday(null);
+        return userResult;
+    }
+
+
 
 }

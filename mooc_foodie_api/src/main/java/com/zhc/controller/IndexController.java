@@ -51,5 +51,4 @@ public class IndexController {
         List<Category> categoryList = catService.queryAllCat(fatherId, 2);
         return IMOOCJSONResult.ok(categoryList);
     }
-
 }

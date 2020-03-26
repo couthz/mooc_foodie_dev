@@ -82,7 +82,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    private Integer commentCounts(String itemId, Integer commentLevel) {
+    Integer commentCounts(String itemId, Integer commentLevel) {
         /*构建条件,不用Example*/
         ItemsComments condition = new ItemsComments();
         condition.setItemId(itemId);

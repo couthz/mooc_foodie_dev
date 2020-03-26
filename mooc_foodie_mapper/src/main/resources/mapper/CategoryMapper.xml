@@ -14,4 +14,63 @@
     <result column="cat_image" property="catImage" jdbcType="VARCHAR" />
     <result column="bg_color" property="bgColor" jdbcType="VARCHAR" />
   </resultMap>
+
+  <resultMap id="SubCategoryCaMap" type="com.zhc.pojo.vo.CategoryVO" >
+    <id column="id" property="id"  />
+    <result column="name" property="name" />
+    <result column="type" property="type"/>
+    <result column="fatherId" property="fatherId"/>
+    <collection property="subCatList" ofType="com.zhc.pojo.vo.SubCategoryVO">
+      <id column="subId" property="subId"  />
+      <result column="subName" property="subName" />
+      <result column="subType" property="subType"/>
+      <result column="subFatherId" property="subFatherId"/>
+    </collection>
+  </resultMap>
+
+  <resultMap id="myNewItemsVO" type="com.zhc.pojo.vo.NewItemsVO" >
+    <id column="rootCatId" property="rootCatId"  />
+    <result column="rootCatName" property="rootCatName" />
+    <result column="slogan" property="slogan"/>
+    <result column="catImage" property="catImage"/>
+    <result column="bgColor" property="bgColor"/>
+    <collection property="simpleItemList" ofType="com.zhc.pojo.vo.SimpleItemVO">
+      <id column="itemId" property="itemId"  />
+      <result column="itemName" property="itemName" />
+      <result column="itemUrl" property="itemUrl"/>
+      <result column="createdTime" property="createdTime"/>
+    </collection>
+  </resultMap>
+
+  <select id="querySubCategory" parameterType="int" resultMap="SubCategoryCaMap">
+    SELECT f.id id, f.name name, f.type type, f.father_id fatherId,
+            s.id subId, s.name subName, s.type subType, s.father_id subFatherId
+    FROM category f
+    LEFT JOIN category s
+    ON f.id = s.father_id
+    WHERE f.father_id = #{rootCatId}
+  </select>
+
+  <select id="getSixNewItemsLazy" resultMap="myNewItemsVO" parameterType="Map">
+    SELECT
+      f.id as rootCatId,
+      f.name as rootCatName,
+      f.slogan as slogan,
+      f.cat_image as catImage,
+      f.bg_color as bgColor,
+      i.id as itemId,
+      i.item_name as itemName,
+      ii.url as itemUrl,
+      i.created_time as createdTime
+    FROM category f
+    LEFT JOIN items i
+    ON f.id = i.root_cat_id
+    LEFT JOIN items_img ii
+    ON i.id = ii.item_id
+    WHERE f.type = 1
+    AND i.root_cat_id = #{paramsMap.rootCatId}
+    AND ii.is_main = 1
+    ORDER BY i.created_time
+    DESC LIMIT 0, 6
+  </select>
 </mapper>

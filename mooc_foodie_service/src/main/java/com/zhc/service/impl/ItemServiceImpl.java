@@ -89,6 +89,4 @@ public class ItemServiceImpl implements ItemService {
         condition.setCommentLevel(commentLevel);
         return itemsCommentsMapper.selectCount(condition);
     }
-
-
 }

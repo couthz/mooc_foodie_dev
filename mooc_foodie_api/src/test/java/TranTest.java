@@ -1,4 +1,5 @@
 import com.zhc.Application;
+import com.zhc.controller.ItemsController;
 import com.zhc.service.StuService;
 import com.zhc.service.TestTransService;
 import org.junit.Test;
@@ -17,8 +18,11 @@ public class TranTest {
     @Autowired
     private TestTransService testTransService;
 
+    @Autowired
+    private ItemsController itemsController;
+
     @Test
     public void myTest() {
-        testTransService.testPropagationTrans();
+        itemsController.comments("cook-1001", null, 1,10);
     }
 }

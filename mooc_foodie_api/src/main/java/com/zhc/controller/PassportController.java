@@ -86,6 +86,8 @@ public class PassportController {
         userResult = setNullProperty(userResult);
         //将用户信息用utf-8编码，添加到cookie
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult),true);
+        //TODO 生成用户token，存入redis会话
+        //TODO 同步购物车数据
         return IMOOCJSONResult.ok();
 
     }
@@ -113,6 +115,8 @@ public class PassportController {
         userResult = setNullProperty(userResult);
         //将用户信息用utf-8编码，添加到cookie
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userResult),true);
+        //TODO 生成用户token，存入redis会话
+        //TODO 同步购物车数据
         return IMOOCJSONResult.ok();
     }
 
@@ -130,8 +134,6 @@ public class PassportController {
         return IMOOCJSONResult.ok();
 
     }
-
-
 
     private Users setNullProperty(Users userResult) {
         userResult.setPassword(null);

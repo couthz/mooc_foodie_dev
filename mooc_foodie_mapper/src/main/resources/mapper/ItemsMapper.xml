@@ -15,4 +15,128 @@
     <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
     <result column="content" property="content" jdbcType="LONGVARCHAR" />
   </resultMap>
+
+  <select id="queryItemComments" parameterType="Map" resultType="com.zhc.pojo.vo.ItemCommentVO">
+    SELECT
+    ic.comment_level as commentLevel,
+    ic.content as content,
+    ic.sepc_name as specName,
+    ic.created_time as createdTime,
+    u.face as userFace,
+    u.nickname as nickname
+    FROM
+    items_comments ic
+    LEFT JOIN
+    users u
+    ON
+    ic.user_id = u.id
+    WHERE
+    ic.item_id = #{paramsMap.itemId}
+    <if test=" paramsMap.level != null and paramsMap.level != '' ">
+      AND ic.comment_level = #{paramsMap.level}
+    </if>
+  </select>
+
+  <select id="searchItems" parameterType="Map" resultType="com.zhc.pojo.vo.SearchItemsVO">
+    SELECT
+	i.id as itemId,
+	i.item_name as itemName,
+	i.sell_counts as sellCounts,
+	ii.url as imgUrl,
+	tempSpec.price_discount as price
+    FROM
+        items i
+    LEFT JOIN
+        items_img ii
+    ON
+      i.id = ii.item_id
+    LEFT JOIN
+    (
+        SELECT item_id,MIN(price_discount) as price_discount from items_spec GROUP BY item_id
+    ) tempSpec
+    ON
+        i.id = tempSpec.item_id
+    WHERE
+        ii.is_main = 1
+        <if test=" paramsMap.keywords != null and paramsMap.keywords != '' ">
+          AND i.item_name like CONCAT('%',#{paramsMap.keywords},'%')
+        </if>
+        order by
+        <choose>
+          <when test='paramsMap.sort == "c"'>
+            i.sell_counts desc
+          </when>
+          <when test='paramsMap.sort == "p"'>
+            tempSpec.price_discount asc
+          </when>
+          <otherwise>
+            i.item_name asc
+          </otherwise>
+        </choose>
+  </select>
+
+  <select id="searchItemsByThirdCat" parameterType="Map" resultType="com.zhc.pojo.vo.SearchItemsVO">
+    SELECT
+    i.id as itemId,
+    i.item_name as itemName,
+    i.sell_counts as sellCounts,
+    ii.url as imgUrl,
+    tempSpec.price_discount as price
+    FROM
+    items i
+    LEFT JOIN
+    items_img ii
+    ON
+    i.id = ii.item_id
+    LEFT JOIN
+    (
+    SELECT item_id,MIN(price_discount) as price_discount from items_spec GROUP BY item_id
+    ) tempSpec
+    ON
+    i.id = tempSpec.item_id
+    WHERE
+    ii.is_main = 1
+    AND i.cat_id = #{paramsMap.catId}
+    order by
+    <choose>
+      <when test='paramsMap.sort == "c"'>
+        i.sell_counts desc
+      </when>
+      <when test='paramsMap.sort == "p"'>
+        tempSpec.price_discount asc
+      </when>
+      <otherwise>
+        i.item_name asc
+      </otherwise>
+    </choose>
+
+  </select>
+
+  <select id="queryItemsBySpecIds" parameterType="List" resultType="com.zhc.pojo.vo.ShopcartVO">
+    SELECT
+        i.id as itemId,
+        i.item_name as itemName,
+        ii.url as itemImgUrl,
+        ispec.id as specId,
+        ispec.`name` as specName,
+        ispec.price_normal as priceNormal,
+        ispec.price_discount as priceDiscount
+    FROM
+        items_spec ispec
+    LEFT JOIN
+        items i
+    ON
+        i.id = ispec.item_id
+    LEFT JOIN
+        items_img ii
+    ON
+        ii.item_id = i.id
+    WHERE
+        ii.is_main = 1
+    AND
+        ispec.id IN
+        <foreach collection="paramsList" index="index" item="specId" open="(" close=")" separator=",">
+            #{specId}
+        </foreach>
+  </select>
 </mapper>

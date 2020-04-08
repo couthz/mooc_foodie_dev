@@ -3,6 +3,7 @@ package com.zhc.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -21,6 +22,11 @@ public class HelloController {
         logger.error("error: hello~");
 
         return "Hello world";
+    }
+
+    @GetMapping("/userInfo")
+    public void userInfo(@RequestParam(required = true) Integer level) {
+        System.out.println();
     }
 
 }

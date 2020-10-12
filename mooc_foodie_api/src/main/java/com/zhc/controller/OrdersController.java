@@ -1,20 +1,11 @@
 package com.zhc.controller;
 
 import com.zhc.enums.PayMethod;
-import com.zhc.pojo.UserAddress;
-import com.zhc.pojo.bo.AddressBO;
 import com.zhc.pojo.bo.SubmitOrderBO;
-import com.zhc.service.AddressService;
 import com.zhc.utils.IMOOCJSONResult;
-import com.zhc.utils.MobileEmailUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 //@Controller springmvc用的比较多，做页面跳转
 @Api(value = "订单相关", tags = {"订单相关的api接口"})

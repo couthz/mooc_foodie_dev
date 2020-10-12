@@ -1,5 +1,8 @@
 package com.zhc.pojo.vo;
 
+/**
+ * 三级分类VO
+ */
 public class SubCategoryVO {
     private Integer subId;
     private String subName;

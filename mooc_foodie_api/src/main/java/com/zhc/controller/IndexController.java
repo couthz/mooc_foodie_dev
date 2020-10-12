@@ -48,10 +48,10 @@ public class IndexController {
         return IMOOCJSONResult.ok(categoryList);
     }
 
-    @ApiOperation(value = "获取二级分类", notes = "获取二级分类")
+    @ApiOperation(value = "获取二三级分类", notes = "获取二三级分类")
     @GetMapping("/subCat/{rootCatId}")
     public IMOOCJSONResult subCat(
-            @ApiParam(name = "rootCatId", value = "一级分类Id", required = true )
+            @ApiParam(name = "rootCatId", value = "上级分类Id", required = true )
             @PathVariable("rootCatId") Integer rootCatId){
         if (rootCatId == null)
             return IMOOCJSONResult.errorMsg("分类不存在");

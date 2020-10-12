@@ -2,6 +2,9 @@ package com.zhc.pojo.vo;
 
 import java.util.List;
 
+/**
+ * 二级分类VO
+ */
 public class CategoryVO {
     private Integer id;
     private String name;

@@ -19,5 +19,8 @@ public interface ItemsMapper extends MyMapper<Items> {
 
     public List<ShopcartVO> queryItemsBySpecIds(@Param("paramsList") List<String>list);
 
+    public int decreaseItemSpecStock(@Param("specId")String specId,
+                                     @Param("pendingCounts")int pendingCounts);
+
 
 }

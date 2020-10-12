@@ -3,6 +3,7 @@ package com.zhc.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhc.enums.CommentLevel;
+import com.zhc.enums.YesOrNo;
 import com.zhc.mapper.*;
 import com.zhc.pojo.*;
 import com.zhc.pojo.vo.CommentLevelCountsVO;
@@ -175,6 +176,31 @@ public class ItemServiceImpl implements ItemService {
         List<String> specIdsList = new ArrayList<>();
         Collections.addAll(specIdsList, ids);
         return itemsMapper.queryItemsBySpecIds(specIdsList);
+    }
+
+    @Override
+    public ItemsSpec queryItemSpecById(String specId) {
+        return itemsSpecMapper.selectByPrimaryKey(specId);
+    }
+
+    @Override
+    public String queryItemMainImgById(String itemId) {
+        ItemsImg itemsImg = new ItemsImg();
+        itemsImg.setItemId(itemId);
+        itemsImg.setIsMain(YesOrNo.YES.type);
+        ItemsImg result = itemsImgMapper.selectOne(itemsImg);
+        return result != null ? result.getUrl() : "";
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void decreaseItemSpecStock(String itemSpecId, int buyCounts) {
+        //库存是公共资源，并发问题
+
+        int result = itemsMapper.decreaseItemSpecStock(itemSpecId, buyCounts);
+        if(result != 1) {
+            throw new RuntimeException("订单创建失败: 库存不足!");
+        }
     }
 
 

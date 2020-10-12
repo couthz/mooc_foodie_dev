@@ -20,5 +20,5 @@ public class BaseController {
     String payReturnUrl = "http://localhost:8088/orders/notifyMerchantOrderPaid";
 
     //支付中心的调用地址
-    String paymentUrl =
+    String paymentUrl = "http://payment.t.mukewang.com/foodie-payment/payment/createMerchantOrder";
 }

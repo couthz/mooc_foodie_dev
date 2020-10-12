@@ -10,9 +10,7 @@ import com.zhc.utils.IMOOCJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -62,8 +60,14 @@ public class OrdersController extends BaseController{
         headers.add("imoocUserId", "imooc");
         headers.add("password", "imooc");
 
+        HttpEntity<MerchantOrdersVO> entity = new HttpEntity<>(merchantOrdersVO, headers);
 
-        restTemplate
+        ResponseEntity<IMOOCJSONResult> responseEntity = restTemplate.postForEntity(paymentUrl, entity, IMOOCJSONResult.class);
+        IMOOCJSONResult paymentResult = responseEntity.getBody();
+        if(paymentResult.getStatus() != 200) {
+            return IMOOCJSONResult.errorMsg("支付中心订单创建失败");
+        }
+
 
         return IMOOCJSONResult.ok(orderId);
     }

@@ -1,5 +1,6 @@
 package com.zhc.service;
 
+import com.zhc.pojo.OrderStatus;
 import com.zhc.pojo.UserAddress;
 import com.zhc.pojo.bo.AddressBO;
 import com.zhc.pojo.bo.SubmitOrderBO;
@@ -21,5 +22,10 @@ public interface OrderService {
      * @param orderStatus
      */
     public void updateOrderStatus(String orderId, Integer orderStatus);
+
+    /**
+     * 查询订单状态
+     */
+    public OrderStatus queryOrderStatusInfo(String orderId);
 
 }

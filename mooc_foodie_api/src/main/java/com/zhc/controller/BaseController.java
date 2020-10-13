@@ -17,6 +17,7 @@ public class BaseController {
 
     //微信支付中心->支付中心->天天吃货平台
     //                    |->回调通知的url
+    //这样写本地地址回调的时候肯定访问不到，需要用natapp做个内网穿透
     String payReturnUrl = "http://localhost:8088/orders/notifyMerchantOrderPaid";
 
     //支付中心的调用地址

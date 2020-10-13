@@ -11,6 +11,8 @@
 
     <artifactId>mooc_foodie_api</artifactId>
 
+    <packaging>war</packaging>
+
     <dependencies>
         <dependency>
             <groupId>com.zhc</groupId>
@@ -23,6 +25,8 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+
     </dependencies>
 
 

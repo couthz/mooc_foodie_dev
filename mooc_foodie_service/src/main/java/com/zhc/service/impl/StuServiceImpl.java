@@ -49,12 +49,14 @@ public class StuServiceImpl implements StuService {
 
 
 
+    @Override
     public void saveParent() {
         Stu stu = new Stu();
         stu.setName("parent");
         stu.setAge(19);
         stuMapper.insert(stu);
     }
+    @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveChildren() {
         saveChild1();

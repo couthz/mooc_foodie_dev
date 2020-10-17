@@ -50,14 +50,15 @@ public class IdWorker {
 
         if (timestamp < lastMillis) {
             logger.error("clock is moving backwards.  Rejecting requests until {}.", lastMillis);
-            throw new InvalidSystemClock(String.format(
+            throw new InvalidSystemClockException(String.format(
                     "Clock moved backwards.  Refusing to generate id for {} milliseconds", lastMillis - timestamp));
         }
 
         if (lastMillis == timestamp) {
             sequence = (sequence + 1) & sequenceMask;
-            if (sequence == 0)
+            if (sequence == 0) {
                 timestamp = tilNextMillis(lastMillis);
+            }
         } else {
             sequence = 0;
         }
@@ -71,8 +72,9 @@ public class IdWorker {
 
     protected long tilNextMillis(long lastMillis) {
         long millis = millisGen();
-        while (millis <= lastMillis)
+        while (millis <= lastMillis) {
             millis = millisGen();
+        }
 
         return millis;
     }

@@ -53,8 +53,9 @@ public class IndexController {
     public IMOOCJSONResult subCat(
             @ApiParam(name = "rootCatId", value = "上级分类Id", required = true )
             @PathVariable("rootCatId") Integer rootCatId){
-        if (rootCatId == null)
+        if (rootCatId == null) {
             return IMOOCJSONResult.errorMsg("分类不存在");
+        }
         List<CategoryVO> categoryList = catService.querySubCategory(rootCatId);
         return IMOOCJSONResult.ok(categoryList);
     }
@@ -64,8 +65,9 @@ public class IndexController {
     public IMOOCJSONResult sixNewItems(
             @ApiParam(name = "rootCatId", value = "一级分类Id", required = true )
             @PathVariable("rootCatId") Integer rootCatId){
-        if (rootCatId == null)
+        if (rootCatId == null) {
             return IMOOCJSONResult.errorMsg("分类不存在");
+        }
         List<NewItemsVO> newItemsVOList = catService.getSixNewItemsLazy(rootCatId);
         return IMOOCJSONResult.ok(newItemsVOList);
     }

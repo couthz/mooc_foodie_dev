@@ -13,12 +13,14 @@ public class Sid {
     private static IdWorker idWorker;
 
     static {
-        configure(DefaultWorkerIdStrategy.instance);
+        configure(DefaultWorkerIdStrategy.INSTANCE);
     }
 
 
     public static synchronized void configure(WorkerIdStrategy custom) {
-        if (workerIdStrategy != null) workerIdStrategy.release();
+        if (workerIdStrategy != null) {
+            workerIdStrategy.release();
+        }
         workerIdStrategy = custom;
         idWorker = new IdWorker(workerIdStrategy.availableWorkerId()) {
             @Override

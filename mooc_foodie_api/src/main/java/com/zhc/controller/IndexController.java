@@ -8,9 +8,12 @@ import com.zhc.pojo.vo.NewItemsVO;
 import com.zhc.service.CarouselService;
 import com.zhc.service.CatService;
 import com.zhc.utils.IMOOCJSONResult;
+import com.zhc.utils.JsonUtils;
+import com.zhc.utils.RedisOperator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.ArrayList;
 import java.util.List;
 
 //@Controller springmvc用的比较多，做页面跳转
@@ -32,12 +36,26 @@ public class IndexController {
     private CarouselService carouselService;
     @Autowired
     private CatService catService;
+    @Autowired
+    private RedisOperator redisOperator;
 
     @ApiOperation(value = "获取首页轮播图列表", notes = "获取首页轮播图列表")
     @GetMapping("/carousel")
     public IMOOCJSONResult carousel() {
 
-        List<Carousel> carouselList = carouselService.queryAll(YesOrNo.YES.type);
+        List<Carousel> carouselList;
+        String carouselStr = redisOperator.get("carousel");
+        //cache aside读写模式中的读模式
+        //缓存无数据，穿透
+        if (StringUtils.isBlank(carouselStr)) {
+            carouselList = carouselService.queryAll(YesOrNo.YES.type);
+            //同时写缓存
+            redisOperator.set("carousel", JsonUtils.objectToJson(carouselList));
+        }
+        //缓存有数据
+        else {
+            carouselList = JsonUtils.jsonToList(carouselStr, Carousel.class);
+        }
         return IMOOCJSONResult.ok(carouselList);
     }
 

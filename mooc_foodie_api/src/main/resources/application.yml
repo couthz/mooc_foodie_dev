@@ -17,6 +17,7 @@ spring:
       max-lifetime: 1800000
       connection-test-query: SELECT 1
 
+
 mybatis:
   type-aliases-package: com.zhc.pojo
   mapper-locations: classpath:mapper/*.xml

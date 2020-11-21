@@ -62,7 +62,17 @@ public class IndexController {
     @ApiOperation(value = "获取一级分类", notes = "获取一级分类")
     @GetMapping("/cats")
     public IMOOCJSONResult cat(){
-        List<Category> categoryList = catService.queryAllCat();
+        List<Category> categoryList;
+        String categoryStr = redisOperator.get("category");
+        if (StringUtils.isBlank(categoryStr)) {
+            categoryList = catService.queryAllCat();
+            //同时写缓存
+            redisOperator.set("category", JsonUtils.objectToJson(categoryList));
+        }
+        else {
+            categoryList = JsonUtils.jsonToList(categoryStr, Category.class);
+        }
+
         return IMOOCJSONResult.ok(categoryList);
     }
 
@@ -74,9 +84,24 @@ public class IndexController {
         if (rootCatId == null) {
             return IMOOCJSONResult.errorMsg("分类不存在");
         }
-        List<CategoryVO> categoryList = catService.querySubCategory(rootCatId);
-        return IMOOCJSONResult.ok(categoryList);
+        List<CategoryVO> subCategoryList;
+        String subCategoryStr = redisOperator.get("subCat:" + rootCatId);
+        if (StringUtils.isBlank(subCategoryStr)) {
+            subCategoryList = catService.querySubCategory(rootCatId);
+            //同时写缓存
+            redisOperator.set("subCat:" + rootCatId, JsonUtils.objectToJson(subCategoryList));
+        }
+        else {
+            subCategoryList = JsonUtils.jsonToList(subCategoryStr, CategoryVO.class);
+        }
+        return IMOOCJSONResult.ok(subCategoryList);
     }
+
+    /**
+     * 1. 后台运营系统，一旦广告（轮播图）发生更改，就可以删除缓存，然后重置
+     * 2. 定时重置，比如每天凌晨三点重置,删除重置
+     * 3. 每个轮播图都有可能是一个广告，每个广告都会有一个过期时间，过期了，再重置
+     */
 
     @ApiOperation(value = "查询一级分类下最新的6个商品", notes = "查询一级分类下最新的6个商品")
     @GetMapping("/sixNewItems/{rootCatId}")

@@ -5,11 +5,13 @@ import com.zhc.enums.YesOrNo;
 import com.zhc.mapper.*;
 import com.zhc.pojo.*;
 import com.zhc.pojo.bo.AddressBO;
+import com.zhc.pojo.bo.ShopcartBO;
 import com.zhc.pojo.bo.SubmitOrderBO;
 import com.zhc.pojo.vo.MerchantOrdersVO;
 import com.zhc.service.AddressService;
 import com.zhc.service.ItemService;
 import com.zhc.service.OrderService;
+import com.zhc.utils.RedisOperator;
 import net.bytebuddy.asm.Advice;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,9 +45,12 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private Sid sid;
 
+    @Autowired
+    private RedisOperator redisOperator;
+
     @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public MerchantOrdersVO createOrder(SubmitOrderBO submitOrderBO) {
+    public MerchantOrdersVO createOrder(List<ShopcartBO> shopcartList, SubmitOrderBO submitOrderBO) {
         String userId = submitOrderBO.getUserId();
         String addressId = submitOrderBO.getAddressId();
         //这里用规格作为了订单中商品的基本单位
@@ -63,6 +69,8 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setUserId(userId);
 
         //设置收货地址快照
+        newOrder.setReceiverName(address.getReceiver());
+        newOrder.setReceiverMobile(address.getMobile());
         newOrder.setReceiverAddress(address.getProvince() + " "
                 + address.getCity() + " "
                 + address.getDistrict() + " "
@@ -80,10 +88,19 @@ public class OrderServiceImpl implements OrderService {
         Integer totalAmount = 0;
         Integer realPayAmount = 0;
         for (String itemSpecId : itemSpedIdArr) {
+            ShopcartBO shopcartBO = null;
+            //整合redis后，商品购买的数量重新从redis的购物车中获取
+            for (ShopcartBO tempShopcartBO : shopcartList) {
+                if (tempShopcartBO.getSpecId().equals(itemSpecId)) {
+                    shopcartBO = tempShopcartBO;
+                    shopcartList.remove(shopcartBO);
+                    break;
+                }
+            }
             //2.1 根据规格id，查询规格具体信息
             ItemsSpec itemsSpec = itemService.queryItemSpecById(itemSpecId);
-            //TODO 整合redis后，商品购买的数量重新从redis的购物车中获取
-            int buyCounts = 1;
+
+            int buyCounts = shopcartBO.getBuyCounts();
             totalAmount += itemsSpec.getPriceNormal() * buyCounts;
             realPayAmount += itemsSpec.getPriceDiscount() * buyCounts;
 
@@ -126,7 +143,6 @@ public class OrderServiceImpl implements OrderService {
         merchantOrdersVO.setMerchantUserId(userId);
         merchantOrdersVO.setAmount(realPayAmount + postAmount);
         merchantOrdersVO.setPayMethod(payMethod);
-
         return merchantOrdersVO;
 
     }

@@ -1,5 +1,9 @@
 package com.zhc.pojo.vo;
 
+import com.zhc.pojo.bo.ShopcartBO;
+
+import java.util.List;
+
 public class MerchantOrdersVO {
 
     private String merchantOrderId;         // 商户订单号
@@ -47,4 +51,5 @@ public class MerchantOrdersVO {
     public void setReturnUrl(String returnUrl) {
         this.returnUrl = returnUrl;
     }
+
 }

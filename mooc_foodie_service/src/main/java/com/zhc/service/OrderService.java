@@ -3,6 +3,7 @@ package com.zhc.service;
 import com.zhc.pojo.OrderStatus;
 import com.zhc.pojo.UserAddress;
 import com.zhc.pojo.bo.AddressBO;
+import com.zhc.pojo.bo.ShopcartBO;
 import com.zhc.pojo.bo.SubmitOrderBO;
 import com.zhc.pojo.vo.MerchantOrdersVO;
 
@@ -12,9 +13,10 @@ public interface OrderService {
 
     /**
      * 用于创建订单
+     * @param shopcartList
      * @param submitOrderBO
      */
-    public MerchantOrdersVO createOrder(SubmitOrderBO submitOrderBO);
+    public MerchantOrdersVO createOrder(List<ShopcartBO> shopcartList, SubmitOrderBO submitOrderBO);
 
     /**
      * 修改订单状态
